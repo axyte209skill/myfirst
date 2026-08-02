@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Monopoly Deal — Online</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-theme="dark" data-lang="en">
+
+  <!-- ===================== LOBBY / WAITING ROOM ===================== -->
+  <section class="lobby" id="lobbyScreen">
+    <h1 class="lobby__title">Monopoly Deal</h1>
+
+    <div class="lobby__forms" id="lobbyForms">
+      <div class="lobby__card">
+        <h2>Create Room</h2>
+        <input type="text" id="createNameInput" placeholder="Your name" maxlength="16" />
+        <button class="btn btn--primary" id="createRoomBtn">Create Room</button>
+      </div>
+      <div class="lobby__card">
+        <h2>Join Room</h2>
+        <input type="text" id="joinNameInput" placeholder="Your name" maxlength="16" />
+        <input type="text" id="joinCodeInput" placeholder="Room code" maxlength="4" style="text-transform:uppercase" />
+        <button class="btn btn--secondary" id="joinRoomBtn">Join Room</button>
+      </div>
+    </div>
+    <div class="lobby__error" id="lobbyError"></div>
+
+    <div class="waiting-room" id="waitingRoom" hidden>
+      <div class="waiting-room__code">
+        Room Code: <span id="waitingRoomCode">----</span>
+      </div>
+      <ul class="player-list" id="playerList"></ul>
+      <button class="btn btn--primary" id="startGameBtn" hidden>Start Game</button>
+      <div class="waiting-room__hint" id="waitingHint">Waiting for the host to start…</div>
+    </div>
+  </section>
+
+  <!-- ===================== GAME SCREEN (hidden until a game starts) ===================== -->
+  <div id="gameScreen" hidden>
+
+  <!-- ===================== TOP NAVIGATION ===================== -->
+  <header class="topnav">
+    <div class="topnav__logo">Monopoly Deal</div>
+
+    <div class="topnav__room">
+      <span class="room-label" data-en="Room" data-hi="कमरा">Room</span>
+      <span class="room-code" id="roomCode">----</span>
+    </div>
+
+    <div class="topnav__controls">
+      <select id="langSelect" class="lang-select" aria-label="Language">
+        <option value="en">EN</option>
+        <option value="hi">HI</option>
+      </select>
+
+      <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">
+        <span class="icon-sun">☀</span>
+        <span class="icon-moon">☾</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== OPPONENT AREA ===================== -->
+  <section class="opponents" id="opponents">
+    <!-- Opponent cards are injected by main.js (up to 4) -->
+  </section>
+
+  <!-- ===================== CENTER AREA ===================== -->
+  <section class="center-area">
+    <div class="pile deck" id="deckPile">
+      <div class="pile__label" data-en="Deck" data-hi="डेक">Deck</div>
+      <div class="card card--back"></div>
+    </div>
+
+    <div class="game-status" id="gameStatus" data-en="Waiting for players…" data-hi="खिलाड़ियों का इंतज़ार…">
+      Waiting for players…
+    </div>
+
+    <div class="pile discard" id="discardPile">
+      <div class="pile__label" data-en="Discard" data-hi="त्याग">Discard</div>
+      <div class="card card--empty"></div>
+    </div>
+  </section>
+
+  <!-- ===================== MY AREA ===================== -->
+  <section class="my-area">
+    <div class="my-area__boards">
+      <div class="board" id="myProperties">
+        <div class="board__label" data-en="My Properties" data-hi="मेरी संपत्ति">My Properties</div>
+        <span class="sets-progress" id="setsProgress"></span>
+        <div class="board__slots"></div>
+      </div>
+
+      <div class="board board--bank" id="myBank">
+        <div class="board__label" data-en="My Bank" data-hi="मेरा बैंक">My Bank</div>
+        <div class="board__slots"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MY HAND (fixed) ===================== -->
+  <section class="my-hand" id="myHand" aria-label="Your hand">
+    <!-- Hand cards injected by main.js -->
+  </section>
+
+  <!-- ===================== ACTION SYSTEM PANELS ===================== -->
+  <section class="notifications" id="notifications"></section>
+  <section class="target-picker" id="targetPicker" hidden></section>
+  <section class="pending-action" id="pendingAction" hidden></section>
+
+  <!-- ===================== BOTTOM CONTROLS ===================== -->
+  <footer class="bottom-controls">
+    <button class="btn btn--primary" id="playCardBtn" data-en="Play Card" data-hi="कार्ड खेलें">Play Card</button>
+    <button class="btn btn--secondary" id="endTurnBtn" data-en="End Turn" data-hi="बारी समाप्त">End Turn</button>
+    <button class="btn btn--ghost" id="menuBtn" data-en="Menu" data-hi="मेनू">Menu</button>
+  </footer>
+
+  </div>
+
+  <!-- ===================== SETTINGS MENU (opened via the Menu button) ===================== -->
+  <div class="settings-overlay" id="settingsOverlay" hidden>
+    <div class="settings-panel">
+      <h2 data-en="Settings" data-hi="सेटिंग्स">Settings</h2>
+      <button class="settings-row" id="settingsThemeBtn">
+        <span data-en="Theme" data-hi="थीम">Theme</span>
+        <span id="settingsThemeValue">Dark</span>
+      </button>
+      <div class="settings-row">
+        <span data-en="Language" data-hi="भाषा">Language</span>
+        <select id="settingsLangSelect" class="lang-select">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
+      <button class="settings-row" id="soundToggleBtn">
+        <span data-en="Sound" data-hi="ध्वनि">Sound</span>
+        <span id="soundToggleValue">On</span>
+      </button>
+      <button class="btn btn--secondary" id="leaveRoomBtn" data-en="Leave Room" data-hi="कमरा छोड़ें">Leave Room</button>
+      <button class="btn btn--ghost" id="closeSettingsBtn" data-en="Close" data-hi="बंद करें">Close</button>
+    </div>
+  </div>
+
+  <!-- ===================== WIN CELEBRATION ===================== -->
+  <div class="win-overlay" id="winOverlay" hidden>
+    <div class="win-overlay__card">
+      <div class="win-overlay__title" id="winTitle">🎉</div>
+      <button class="btn btn--primary" id="winCloseBtn" data-en="Close" data-hi="बंद करें">Close</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
