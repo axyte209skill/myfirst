@@ -27,6 +27,16 @@ import {
 
 const body = document.body;
 
+/* ---------- Safety net: show any uncaught script error on-screen ---------- */
+/* Without this, one early failure (e.g. Socket.io not loading) silently
+   stops every line after it — including every button's click listener —
+   with nothing visible to tell you why. */
+window.addEventListener("error", (event) => {
+  console.error("Unhandled script error:", event.error || event.message);
+  const el = document.getElementById("lobbyError");
+  if (el) el.textContent = `Script error: ${event.message} (see browser console for details)`;
+});
+
 /* ---------- Theme (unchanged logic, now also mirrored in Settings) ---------- */
 const themeToggle = document.getElementById("themeToggle");
 const settingsThemeBtn = document.getElementById("settingsThemeBtn");
@@ -133,7 +143,22 @@ let latestGame = null;
 let lastHandCount = null; // used only to trigger a "draw" sound on hand growth
 let winnerAnnounced = false;
 
-const socket = io();
+let socket;
+try {
+  if (typeof io !== "function") {
+    throw new Error("Socket.io client script did not load (blocked, or the server isn't running Socket.io).");
+  }
+  socket = io();
+} catch (err) {
+  console.error("Could not connect to the game server:", err);
+  const el = document.getElementById("lobbyError");
+  if (el) {
+    el.textContent = "Could not connect to the game server. Try disabling any ad blocker for this site, then refresh.";
+  }
+  // No-op stub so the rest of this file can still run (buttons stay clickable,
+  // even though they won't be able to do anything without a real connection).
+  socket = { emit: () => {}, on: () => {} };
+}
 
 function persistIdentity(code, token) {
   myCode = code;
