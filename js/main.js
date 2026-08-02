@@ -37,6 +37,19 @@ window.addEventListener("error", (event) => {
   if (el) el.textContent = `Script error: ${event.message} (see browser console for details)`;
 });
 
+/* ---------- Shared client state ---------- */
+/* Declared up front (not just before first use) because applyLanguage(),
+   called immediately below during startup, reads latestGame — and a
+   `let` declared later is in the "temporal dead zone" until its own
+   line runs, so referencing it earlier throws instead of being undefined. */
+let myToken = localStorage.getItem("md-token") || null;
+let myCode = localStorage.getItem("md-code") || null;
+let selectedCardId = null;
+let latestRoom = null;
+let latestGame = null;
+let lastHandCount = null; // used only to trigger a "draw" sound on hand growth
+let winnerAnnounced = false;
+
 /* ---------- Theme (unchanged logic, now also mirrored in Settings) ---------- */
 const themeToggle = document.getElementById("themeToggle");
 const settingsThemeBtn = document.getElementById("settingsThemeBtn");
@@ -135,13 +148,8 @@ const winOverlayEl = document.getElementById("winOverlay");
 const winTitleEl = document.getElementById("winTitle");
 
 /* ---------- Identity + reconnect ---------- */
-let myToken = localStorage.getItem("md-token") || null;
-let myCode = localStorage.getItem("md-code") || null;
-let selectedCardId = null;
-let latestRoom = null;
-let latestGame = null;
-let lastHandCount = null; // used only to trigger a "draw" sound on hand growth
-let winnerAnnounced = false;
+/* (myToken/myCode/latestRoom/latestGame/etc. are declared near the top of
+   this file, before applyLanguage's startup call, to avoid a TDZ error.) */
 
 let socket;
 try {
