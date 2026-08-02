@@ -9,7 +9,7 @@ import { GameEngine } from "../js/engine/GameEngine.js";
 import { broadcastState } from "./gameSync.js";
 import { pickBotAction } from "./BotAI.js";
 
-const MIN_PLAYERS = 2;
+const MIN_PLAYERS = 1;
 
 export function registerSocketHandlers(io, socket, rooms) {
   let currentCode = null;
