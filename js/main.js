@@ -311,12 +311,8 @@ function renderWaitingRoom() {
 
   const iAmHost = !!latestRoom.players.find((p) => p.token === myToken)?.isHost;
   startGameBtn.hidden = !iAmHost;
-  startGameBtn.disabled = latestRoom.players.length < 2;
-  waitingHintEl.textContent = iAmHost
-    ? latestRoom.players.length < 2
-      ? t("needMorePlayers")
-      : t("readyToStart")
-    : t("waitingForHost");
+  startGameBtn.disabled = false;
+  waitingHintEl.textContent = iAmHost ? t("readyToStart") : t("waitingForHost");
 }
 
 function renderGame() {
